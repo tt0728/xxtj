@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的预约</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .appointment-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex; /* 使用 Flexbox 布局 */
+            flex-direction: column; /* 垂直堆叠内容 */
+            gap: 5px; /* 项目之间的间距 */
+        }
+        .status-PENDING { color: orange; }
+        .status-APPROVED { color: green; }
+        .status-REJECTED { color: red; }
+        .view-credential-btn { /* 为新按钮添加样式 */
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 10px; /* 与上方内容留出间距 */
+            align-self: flex-start; /* 让按钮靠左对齐 */
+        }
+        .view-credential-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>我的预约</h1>
+        <p>欢迎回来，<span id="welcomeUsername"></span>！</p>
+        <button onclick="location.href='visitor-register.html'">提交新的预约</button>
+        <button id="logoutButton">登出</button>
+        <hr>
+        <h2>我的预约列表</h2>
+        <div id="appointmentsList">
+            <p>加载中...</p>
+        </div>
+        <p id="message"></p>
+    </div>
+    <script src="js/visitor-dashboard.js"></script>
+</body>
+</html>

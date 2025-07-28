@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>访客凭证</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .certificate-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            position: relative; /* For the background elements */
+            overflow: hidden; /* To clip the background elements */
+        }
+        .certificate-header {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .company-name {
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 25px;
+        }
+        .qr-code-area {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .qr-code-area img {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+        }
+        .status-arrow {
+            font-size: 8em; /* Make the arrow large */
+            color: #28a745; /* Green color */
+            font-weight: bold;
+            line-height: 1;
+            text-align: center;
+        }
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #666;
+        }
+        .info-value {
+            color: #333;
+        }
+        .download-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            margin-top: 30px;
+            transition: background-color 0.3s ease;
+        }
+        .download-button:hover {
+            background-color: #0056b3;
+        }
+        .background-wave { /* Cosmetic background */
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background-color: #e0f2f7;
+            border-radius: 0 0 10px 10px;
+            transform: translateY(50px);
+            z-index: -1;
+        }
+        .background-circle { /* Cosmetic background */
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background-color: #cceeff;
+            border-radius: 50%;
+            opacity: 0.5;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="certificate-container" id="certificateContent">
+        <div class="background-wave"></div>
+        <div class="background-circle"></div>
+
+        <div class="certificate-header">访客凭证</div>
+
+        <div class="qr-code-area" id="qrCodeOrArrow">
+            </div>
+
+        <div class="info-details">
+            <div class="info-item">
+                <span class="info-label">访客 ID:</span>
+                <span class="info-value" id="visitorId"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">访客姓名:</span>
+                <span class="info-value" id="visitorName"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">同行访客人数:</span>
+                <span class="info-value" id="companionCount"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">受访人姓名:</span>
+                <span class="info-value" id="visitedPerson"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">来访时间:</span>
+                <span class="info-value" id="visitTime"></span>
+            </div>
+            </div>
+    </div>
+
+    <button class="download-button" id="downloadBtn">下载凭证</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 1. 从 URL 中获取访客 ID
+            const urlParams = new URLSearchParams(window.location.search);
+            const visitorId = urlParams.get('id');
+
+            if (!visitorId) {
+                alert('未找到访客 ID！');
+                return;
+            }
+
+            // 2. 调用后端 API 获取访客详情
+            try {
+                const response = await fetch(`/api/public/visitors/my-appointments?id=${visitorId}`); // 或者使用 /api/admin/visitors/${visitorId}/details 如果是管理员视角
+                if (!response.ok) {
+                    throw new Error('获取访客详情失败: ' + response.statusText);
+                }
+                const data = await response.json();
+                // 因为 /my-appointments 返回的是列表，我们需要找到匹配的ID
+                const visitorData = data.find(v => v.id.toString() === visitorId);
+
+                if (!visitorData) {
+                    alert('访客详情未找到。');
+                    return;
+                }
+
+                // 3. 填充凭证信息
+                document.getElementById('visitorId').textContent = visitorData.id;
+                document.getElementById('visitorName').textContent = visitorData.name;
+                document.getElementById('companionCount').textContent = visitorData.companions ? visitorData.companions.length : 0;
+                document.getElementById('visitedPerson').textContent = visitorData.visitedPerson;
+                document.getElementById('visitTime').textContent = `${visitorData.visitDate} ${visitorData.visitTimeStart}-${visitorData.visitTimeEnd}`;
+
+                // 4. 根据使用状态显示二维码或绿色箭头
+                const qrCodeOrArrowArea = document.getElementById('qrCodeOrArrow');
+                if (visitorData.usageStatus === 'ENTERED' || visitorData.usageStatus === 'COMPLETED') { // 根据后端 UsageStatus 枚举判断
+                    qrCodeOrArrowArea.innerHTML = '<div class="status-arrow">✔</div>'; // 显示绿色大箭头
+                } else {
+                    // 如果是 UNUSED 或其他状态，生成并显示二维码
+                    const qrCodeResponse = await fetch(`/api/admin/visitors/${visitorId}/qrcode`); // 调用生成二维码接口
+                    if (!qrCodeResponse.ok) {
+                        throw new Error('获取二维码失败: ' + qrCodeResponse.statusText);
+                    }
+                    const qrCodeData = await qrCodeResponse.json();
+                    if (qrCodeData.qrCodeImage) {
+                        qrCodeOrArrowArea.innerHTML = `<img src="data:image/png;base64,${qrCodeData.qrCodeImage}" alt="访客二维码">`;
+                    } else {
+                        qrCodeOrArrowArea.innerHTML = '<p>二维码生成失败。</p>';
+                    }
+                }
+
+            } catch (error) {
+                console.error('加载访客凭证失败:', error);
+                alert('加载访客凭证失败，请重试。');
+            }
+
+            // 5. 添加下载按钮功能
+            document.getElementById('downloadBtn').addEventListener('click', () => {
+                const certificateContent = document.getElementById('certificateContent');
+                html2canvas(certificateContent, {
+                    scale: 2, // 提高分辨率
+                    useCORS: true // 如果图片来自CORS域，需要设置
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `访客凭证_${document.getElementById('visitorName').textContent}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
