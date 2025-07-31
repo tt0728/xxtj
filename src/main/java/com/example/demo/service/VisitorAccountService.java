@@ -36,10 +36,8 @@ public class VisitorAccountService {
             }
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            // 如果系统不支持 SHA-256 算法，这几乎不可能发生
             throw new RuntimeException("SHA-256 algorithm not found", e);
         } catch (UnsupportedEncodingException e) {
-            // 如果 UTF-8 编码不支持，这几乎不可能发生
             throw new RuntimeException("UTF-8 encoding not supported", e);
         }
     }
