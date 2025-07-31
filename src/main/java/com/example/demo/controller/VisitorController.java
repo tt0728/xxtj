@@ -40,7 +40,7 @@ public class VisitorController {
         return "index.html";
     }
 
-    // 【新增】一个示例接口，用于触发异步方法
+    //一个示例接口，用于触发异步方法
     @GetMapping("/api/public/trigger-async-task")
     public ResponseEntity<String> triggerAsyncTask() {
         System.out.println("Controller: 正在触发异步任务...");
@@ -49,7 +49,7 @@ public class VisitorController {
         return ResponseEntity.ok("异步任务已在后台启动。请查看控制台日志。");
     }
 
-    // 【新增】另一个示例接口，用于触发同步方法（对比）
+    //另一个示例接口，用于触发同步方法（对比）
     @GetMapping("/api/public/trigger-sync-task")
     public ResponseEntity<String> triggerSyncTask() {
         System.out.println("Controller: 正在触发同步任务...");
