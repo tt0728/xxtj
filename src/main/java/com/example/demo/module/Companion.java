@@ -19,7 +19,7 @@ public class Companion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // --- 同行人信息 ---
+    //同行人信息
     @Column(nullable = false)
     private String name;
 
@@ -28,13 +28,13 @@ public class Companion {
     @Column(name = "id_card")
     private String idCard;
 
-    // --- 与 Visitor 的多对一关联 ---
+    //与 Visitor 的多对一关联
     @ManyToOne(fetch = FetchType.LAZY) // 多个 Companion 对应一个 Visitor
     @JoinColumn(name = "visitor_id", nullable = false) // 外键列名
     @JsonIgnore // 避免在序列化时 Visitor 和 Companion 之间产生无限循环
     private Visitor visitor;
 
-    // --- 时间戳 ---
+    //时间戳
     @Column(name = "create_time", updatable = false)
     private LocalDateTime createTime;
 
