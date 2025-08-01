@@ -7,7 +7,7 @@ import com.example.demo.repository.VisitorRepository;
 import com.example.demo.dto.VisitorRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+//import org.springframework.transaction.annotation.Transactional;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
@@ -37,7 +37,7 @@ public class VisitorService {
     }
 
     // 访客预约提交，现在接受 visitorAccountId
-    @Transactional
+    //@Transactional
     public Visitor submitAppointment(VisitorRequest request, Long visitorAccountId) {
         Visitor visitor = new Visitor();
         visitor.setVisitorAccountId(visitorAccountId); // 设置关联的访客账号ID
@@ -85,7 +85,7 @@ public class VisitorService {
         return visitorRepository.findById(id);
     }
 
-    @Transactional
+    //@Transactional
     public Optional<Visitor> approveOrRejectVisitor(Long id, String newStatus, String comments) {
         return visitorRepository.findById(id)
                 .map(visitor -> {
@@ -99,7 +99,7 @@ public class VisitorService {
                 });
     }
 
-    @Transactional
+    //@Transactional
     public Optional<Visitor> recordEntry(String qrCodeContent) {
         // 假设qrCodeContent是Visitor的ID
         try {
@@ -130,7 +130,7 @@ public class VisitorService {
         }
     }
 
-    @Transactional
+    //@Transactional
     public Optional<Visitor> recordExit(String qrCodeContent) {
         // 假设qrCodeContent是Visitor的ID
         try {
